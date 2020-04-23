@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AngularTutorial</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script data-require="angularjs@1.5.7" data-semver="1.5.7" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+  <script src="../src/app/script.js"></script>
+</head>
+<body ng-app="todo" ng-controller="todoCtrl">
+  
+  <div class = "container">
+    <h1>To-Do List</h1>
+    <form name = "todoForm" ng-submit="add(newTodoTitle)">
+      <!--ng-submit : onSubmit의 ng 버전, form 태그 안에서 form전송을 하기 전에 입력된 데이터의 유효성을 체크하기 위해 사용하는 이벤트.-->
+      <div class = "input-group">
+        <input 
+          type="text" ng-model="newTodoTitle" 
+          placeholder="새로 할일을 입력해주세요"
+          minlength="3"
+        >
+        <span class = "input-group-btn">
+          <button class = "btn btn-success" type="submit">추가</button>
+        </span>        
+      </div>
+      <div ng-show="todoForm.$dirty && todoForm.$invalid"> 
+        <div class = "alert alert-warning" role="alert">3글자 이상 입력하세요.</div>
+      </div>
+    </form>
+
+    <ul class="list-unstyled">
+      <li ng-repeat="todo in todos | filter: statusFillter">
+              <!--ng-repeat : 배열의 원소를 반복적으로 출력할 때 사용, 하위 태그들을 포함하여 출력한다.for 문과 유사-->
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <div class="input-group-text">
+              <input type="checkbox" ng-model= "todo.completed"> </input>
+              <!--ng-model : UI에서 변경된 값을 인지하고, 변경된 값을 가져와 사용할 수 있는 지시어
+                input, test, textarea등에 사용-->
+            </div>
+          </div>
+          <input type="text" class="form-control" ng-model= "todo.title">
+          <span class="input-group-btn">
+            <button class="btn btn-danger" type="button" ng-click="remove(todo)">삭제</button>
+          </span>
+          <div>
+            <date>{{ todo.createdAt | date: 'yyyy-MM-dd HH:mm:ss' }}</date>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <button class = "btn btn-primary" ng-click="statusFillter={completed:true}">completd</button>
+    <button class = "btn btn-primary" ng-click="statusFillter={completed:false}">active</button>
+    <button class = "btn btn-primary" ng-click="statusFillter={}">All</button>
+
+  </div>    
+
+  
+  <script>
+    var app = angular.module('todo', []);
+    app.controller('todoCtrl', function($scope) {
+        $scope.todos = [
+        {
+          title: "운동하기",
+          completed : true,
+          createdAt : Date.now()
+        },
+        {
+          title: "앵귤러 학습",
+          completed : false,
+          createdAt : Date.now()
+        },
+        {
+          title: "React 학습",
+          completed : true,
+          createdAt : Date.now()
+        },
+      ]
+
+    $scope.remove = function(todo) {
+      // find todo index in todos
+      var idx = $scope.todos.findIndex(function(item){
+        return item.id === todo.id
+      })
+
+      // remove todo index in todos
+      if(idx > -1){
+        $scope.todos.splice(idx,1);
+      }
+    }
+
+    $scope.add = function(newTodoTitle) {
+      let newEle =  {
+          title: newTodoTitle,
+          completed : false,
+          createdAt : Date.now()
+        }
+
+        $scope.todos.push(newEle)  
+    }
+  });
+  </script>
+
+</body>
+</html>
